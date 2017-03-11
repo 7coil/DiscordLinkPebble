@@ -40,6 +40,7 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 //HOLD SELECT CLICK
+// Open the DiscordLink console.
 static void sl_hold_click_handler(ClickRecognizerRef recognizer, void *context) {
 	console_layer_write_text(mini_console_layer, "Secret commands:\nHold SELECT to toggle console.\nHold DOWN to clear chat.");
 	//Toggle the mini-console
@@ -53,6 +54,7 @@ static void sl_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 //HOLD DOWN CLICK
+// Clear the Chat list
 static void dn_hold_click_handler(ClickRecognizerRef recognizer, void *context) {
 	console_layer_clear(console_layer);
 	console_layer_write_text(mini_console_layer, "Cleared chat window.");

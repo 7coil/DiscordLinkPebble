@@ -1,7 +1,7 @@
 {
     "author": "7coil",
     "dependencies": {
-        "https://www.npmjs.com/package/pebble-console-layer": "2.1.6"
+        "pebble-console-layer": "^2.1.6"
     },
     "keywords": [],
     "name": "discordlink",
