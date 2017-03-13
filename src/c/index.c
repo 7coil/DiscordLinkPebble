@@ -42,9 +42,11 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 //HOLD SELECT CLICK
 // Open the DiscordLink console.
 static void sl_hold_click_handler(ClickRecognizerRef recognizer, void *context) {
-	console_layer_write_text(mini_console_layer, "Secret commands:\nHold SELECT to toggle console.\nHold DOWN to clear chat.");
 	//Toggle the mini-console
 	layer_set_hidden(mini_console_layer, !layer_get_hidden(mini_console_layer));
+	//Type if the console is (now) visible
+	layer_get_hidden(mini_console_layer) ? console_layer_write_text(mini_console_layer, "Secret commands:\nHold SELECT to toggle console.\nHold DOWN to clear chat.") : console_layer_write_text(mini_console_layer, "Hidden mini-console");
+
 }
 
 //SELECT CLICK
