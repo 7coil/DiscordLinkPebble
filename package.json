@@ -8,7 +8,11 @@
     "pebble": {
         "displayName": "DiscordLink for Pebble",
         "enableMultiJS": true,
-        "messageKeys": [],
+        "messageKeys": [
+            "message",
+            "type",
+            "outmessage"
+        ],
         "projectType": "native",
         "resources": {
             "media": []
@@ -24,5 +28,5 @@
             "watchface": false
         }
     },
-    "version": "2.1.0"
+    "version": "0.1.0"
 }

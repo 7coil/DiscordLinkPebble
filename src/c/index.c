@@ -4,7 +4,13 @@
 static Window *main_window;
 static Layer *console_layer, *mini_console_layer;
 static DictationSession *s_dictation_session;
+
 static char inputMessage[512];
+
+// Largest expected inbox and outbox message sizes
+const uint32_t inbox_size = 2048;
+const uint32_t outbox_size = 512;
+
 
 // ---------------------------------------------------------------------------------------------- //
 //  Button Functions
@@ -15,6 +21,17 @@ static void dictation_session_callback(DictationSession *session, DictationSessi
 	if(status == DictationSessionStatusSuccess) {
 		strncpy(inputMessage, transcription, 512);
 		console_layer_write_text(console_layer, inputMessage);
+		
+		//For some reason, I can't get a send function working. Here is the same bit of code that has been duplicated within this document. Have fun!
+		DictionaryIterator *out_iter;
+		AppMessageResult result = app_message_outbox_begin(&out_iter);
+
+		if(result == APP_MSG_OK) {
+			dict_write_cstring(out_iter, MESSAGE_KEY_outmessage, inputMessage);
+			result = app_message_outbox_send();
+		} else {
+			console_layer_write_text(mini_console_layer, "The outbox is busy.");
+		}
 	} else {
 		// Display the reason for any error
 		static char s_failed_buff[128];
@@ -44,9 +61,10 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 static void sl_hold_click_handler(ClickRecognizerRef recognizer, void *context) {
 	//Toggle the mini-console
 	layer_set_hidden(mini_console_layer, !layer_get_hidden(mini_console_layer));
-	//Type if the console is (now) visible
-	layer_get_hidden(mini_console_layer) ? console_layer_write_text(mini_console_layer, "Secret commands:\nHold SELECT to toggle console.\nHold DOWN to clear chat.") : console_layer_write_text(mini_console_layer, "Hidden mini-console");
-
+	//Print if shown
+	if (!layer_get_hidden(mini_console_layer)) {
+		console_layer_write_text(mini_console_layer, "Secret commands:\nHold SELECT to toggle console.\nHold DOWN to clear chat.");
+	}
 }
 
 //SELECT CLICK
@@ -115,7 +133,8 @@ static void main_window_load(Window *window) {
 
 	// Write some text
 	console_layer_write_text(mini_console_layer, "DiscordLink opened.");
-	console_layer_write_text(console_layer, "Welcome to DiscordLink!\nPress UP for voice.\nPress SELECT for pre-made messages.\nPress DOWN for a keyboard.");
+	console_layer_write_text(console_layer, "Welcome to DiscordLink!\nPress UP for voice.");
+	//console_layer_write_text(console_layer, "Welcome to DiscordLink!\nPress UP for voice.\nPress SELECT for pre-made messages.\nPress DOWN for a keyboard.");
 }
 
 
@@ -125,6 +144,39 @@ static void main_window_unload(Window *window) {
 	layer_destroy(console_layer);
 }
 
+//Inbox success
+static void inbox_received_callback(DictionaryIterator *iter, void *context) {
+	Tuple *type_tuple = dict_find(iter, MESSAGE_KEY_type);
+	Tuple *message_tuple = dict_find(iter, MESSAGE_KEY_message);
+	if (type_tuple && message_tuple) {
+		char *message = message_tuple->value->cstring;
+		char *type = type_tuple->value->cstring;
+		if (!strcmp(type, "message")) {
+			console_layer_write_text(console_layer, message);
+		} else {
+			console_layer_write_text(mini_console_layer, message);
+		}
+	}
+}
+
+//Inbox failure
+static void inbox_dropped_callback(AppMessageResult reason, void *context) {
+	static char s_failed_buff[128];
+	snprintf(s_failed_buff, sizeof(s_failed_buff), "Inbox failure. Reason: %d", (int)reason);
+	console_layer_write_text(mini_console_layer, s_failed_buff);
+}
+
+//Outbox success
+static void outbox_sent_callback(DictionaryIterator *iter, void *context) {
+
+}
+
+//Outbox failure
+static void outbox_failed_callback(DictionaryIterator *iter, AppMessageResult reason, void *context) {
+	static char s_failed_buff[128];
+	snprintf(s_failed_buff, sizeof(s_failed_buff), "Outbox failure. Reason: %d", (int)reason);
+	console_layer_write_text(mini_console_layer, s_failed_buff);
+}
 
 static void init() {
 	// Create main Window
@@ -135,6 +187,18 @@ static void init() {
 	});
 	window_set_background_color(main_window, GColorDarkGray);
 	window_stack_push(main_window, true);
+
+	// Open AppMessage
+	app_message_open(inbox_size, outbox_size);
+	// Register to be notified about inbox received events
+	app_message_register_inbox_received(inbox_received_callback);
+	// Register to be notified about inbox dropped events
+	app_message_register_inbox_dropped(inbox_dropped_callback);
+	// Register to be notified about outbox sent events
+	app_message_register_outbox_sent(outbox_sent_callback);
+	// Register to be notified about outbox failed events
+	app_message_register_outbox_failed(outbox_failed_callback);
+
 }
 
 
