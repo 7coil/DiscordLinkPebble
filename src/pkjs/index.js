@@ -49,7 +49,6 @@ function printMessage(type, message) {
 }
 
 function sendMessage(source, username, message) {
-	printMessage(source, username, message);
 	socket.emit("message", {
 		source: source,
 		username: username,

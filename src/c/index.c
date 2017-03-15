@@ -20,7 +20,7 @@ const uint32_t outbox_size = 512;
 static void dictation_session_callback(DictationSession *session, DictationSessionStatus status, char *transcription, void *context) {
 	if(status == DictationSessionStatusSuccess) {
 		strncpy(inputMessage, transcription, 512);
-		console_layer_write_text(console_layer, inputMessage);
+		console_layer_write_text_styled(console_layer, inputMessage, GColorCobaltBlue, GColorInherit, GFontInherit, GTextAlignmentInherit, WordWrapInherit);
 		
 		//For some reason, I can't get a send function working. Here is the same bit of code that has been duplicated within this document. Have fun!
 		DictionaryIterator *out_iter;
