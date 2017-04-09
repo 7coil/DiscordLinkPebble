@@ -1,17 +1,20 @@
 {
-    "author": "7coil",
+    "author": "moustacheminer.com",
     "dependencies": {
+        "pebble-clay": "^1.0.3",
         "pebble-console-layer": "^2.1.6"
     },
     "keywords": [],
     "name": "discordlink",
     "pebble": {
-        "displayName": "DiscordLink for Pebble",
+        "displayName": "DiscordLink",
         "enableMultiJS": true,
         "messageKeys": [
-            "message",
-            "type",
-            "outmessage"
+            "inmessage",
+            "intype",
+            "outmessage",
+            "outtype",
+            "auth"
         ],
         "projectType": "native",
         "resources": {
