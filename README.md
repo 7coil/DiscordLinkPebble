@@ -2,7 +2,7 @@
 
 This is the DiscordJS branch, to diverge from DiscordLink browser.
 
-## For Hammer and Chisel, Inc.
+## For Hammer and Chisel, Inc., Discord.JS and lawyers for Apache-2.0
 
 The library used in DiscordLinkPebble is a modified version of Discord.js' WebPack version.
 
@@ -14,5 +14,5 @@ How do we get from 1 beautifully constructed library to an abomination?
 
 # Licence
 
-This piece of software is licenced under the MIT licence.  
+This piece of software (other than DiscordJS) is licenced under the MIT licence.  
 Please read LICENCE.TXT for more details.
