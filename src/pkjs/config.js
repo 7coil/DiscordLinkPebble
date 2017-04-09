@@ -12,8 +12,8 @@ module.exports = [
 			},
 			{
 				"type": "input",
-				"id": "auth",
-				"messageKey": "auth",
+				"id": "username",
+				"messageKey": "username",
 				"defaultValue": "",
 				"label": "Username"
 			}

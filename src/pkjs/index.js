@@ -12,6 +12,7 @@ var clay = new Clay(clayConfig);
 //Get messagekeys
 var messageKeys = require('message_keys');
 
+//Set default username that will be overridden
 var username = "A Pebble User";
 
 Pebble.addEventListener('ready', function() {
@@ -20,6 +21,7 @@ Pebble.addEventListener('ready', function() {
 	console.log('PebbleKit JS ready!');
 	
 	if(localStorage.getItem("username")) {
+		console.log(localStorage.getItem("username"));
 		username = localStorage.getItem("username");
 	} else {
 		printMessage("message", "You have not set a username yet. Please set a username inside the config. A default one has been supplied for testing.");
@@ -46,7 +48,7 @@ Pebble.addEventListener('ready', function() {
 	Pebble.addEventListener('appmessage', function(e) {
 		var dict = e.payload;
 		console.log('Got message: ' + JSON.stringify(dict));
-		sendMessage("Pebble", username, dict.outmessage);
+		sendMessage("Pebble", dict.outmessage);
 	});
 
 });
@@ -66,7 +68,7 @@ function printMessage(type, message) {
 	});
 }
 
-function sendMessage(source, username, message) {
+function sendMessage(source, message) {
 	socket.emit("message", {
 		source: source,
 		username: username,
