@@ -14,10 +14,14 @@ require("./discord.js");
 //Get the client from the "window" object.
 var client = new Discord.Client();
 
+//Get messagekeys
+var messageKeys = require('message_keys');
+
 //Set basic editable info
 var game = "DiscordLink";
 var watch = Pebble.getActiveWatchInfo ? Pebble.getActiveWatchInfo() : null;
 if(watch) {
+	//game += watch.platform;
 	switch(watch.platform) {
 		case "aplite":
 			game += "Pebble";
@@ -30,6 +34,7 @@ if(watch) {
 			break;
 		default:
 			game += "FitBit";
+			break;
 	}
 
 }
@@ -59,10 +64,12 @@ Pebble.addEventListener('ready', function() {
 
 	if (localStorage.getItem("auth")) {
 		client.login(localStorage.getItem("auth"));
+		
 		client.on('ready', function() {
 			//DiscordJS is ready!
 			console.log("Discord.js Ready");
 			printMessage("notify", "DiscordJS Init");
+			console.log(game);
 			client.user.setGame(game);
 		});
 
@@ -89,8 +96,8 @@ Pebble.addEventListener('webviewclosed', function(e) {
 	}
 
 	var dict = clay.getSettings(e.response);
-	console.log("Set API Token: " + dict[10003]);
-	localStorage.setItem("auth", dict[10003]);
+	console.log("Set API Token: " + dict[messageKeys.auth]);
+	localStorage.setItem("auth", dict[messageKeys.auth]);
 	printMessage("notify", "Config set!");
 	printMessage("message", "You may want to restart DiscordLink to apply settings.");
 });
