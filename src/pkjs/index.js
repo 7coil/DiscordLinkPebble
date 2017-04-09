@@ -1,14 +1,34 @@
+/* jshint esversion: 6 */
+
 var socket = require('./socket.io')('http://chat.infra.link');
+
+//Import the Clay package
+var Clay = require('pebble-clay');
+//Load our Clay configuration file
+var clayConfig = require('./config');
+//Initialise Clay
+var clay = new Clay(clayConfig);
+
+//Get messagekeys
+var messageKeys = require('message_keys');
+
+var username = "A Pebble User";
 
 Pebble.addEventListener('ready', function() {
 	
 	// PebbleKit JS is ready!
 	console.log('PebbleKit JS ready!');
+	
+	if(localStorage.getItem("username")) {
+		username = localStorage.getItem("username");
+	} else {
+		printMessage("message", "You have not set a username yet. Please set a username inside the config. A default one has been supplied for testing.");
+	}
 
 	printMessage("notify", "PebbleKit JS Initialised!");
 
 	socket.on("connect", function () {
-		socket.emit("user", {"username": "PebbleApp2"});
+		socket.emit("user", {"username": username});
 	});
 
 	socket.on("system", function(data) {
@@ -26,7 +46,7 @@ Pebble.addEventListener('ready', function() {
 	Pebble.addEventListener('appmessage', function(e) {
 		var dict = e.payload;
 		console.log('Got message: ' + JSON.stringify(dict));
-		sendMessage("Pebble", "Pebble", dict.outmessage);
+		sendMessage("Pebble", username, dict.outmessage);
 	});
 
 });
@@ -37,8 +57,6 @@ function printMessage(type, message) {
 		'type': type,
 		'message': message
 	};
-	
-	console.dir(dict);
 
 	//Send message to the pebble
 	Pebble.sendAppMessage(dict, function() {
@@ -55,3 +73,16 @@ function sendMessage(source, username, message) {
 		message: message
 	});
 }
+
+//Save the API Token that's been set
+Pebble.addEventListener('webviewclosed', function(e) {
+	if (e && !e.response) {
+		return;
+	}
+
+	var dict = clay.getSettings(e.response);
+	console.log("Set Username: " + dict[messageKeys.username]);
+	localStorage.setItem("username", dict[messageKeys.username]);
+	printMessage("notify", "Config set!");
+	printMessage("message", "You may want to restart DiscordLink to apply settings.");
+});

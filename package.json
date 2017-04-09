@@ -1,6 +1,7 @@
 {
     "author": "7coil",
     "dependencies": {
+        "pebble-clay": "^1.0.3",
         "pebble-console-layer": "^2.1.6"
     },
     "keywords": [],
@@ -11,7 +12,8 @@
         "messageKeys": [
             "message",
             "type",
-            "outmessage"
+            "outmessage",
+            "username"
         ],
         "projectType": "native",
         "resources": {
@@ -23,10 +25,10 @@
             "basalt",
             "chalk"
         ],
-        "uuid": "5ae58854-c1de-4a6c-8f63-719bae5438cd",
+        "uuid": "28641cb6-404e-4f27-bfb7-3a06b1a66095",
         "watchapp": {
             "watchface": false
         }
     },
-    "version": "0.1.0"
+    "version": "3.1.0"
 }
